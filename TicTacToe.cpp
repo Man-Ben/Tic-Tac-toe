@@ -196,7 +196,7 @@ void Update()
       {
          GameOver(player1Name, player1Score, player2Score, 1, false);
 
-         if(Restart(remainingPosition, table))
+         if(!(Restart(remainingPosition, table)))
             break;
       }
       
@@ -204,7 +204,7 @@ void Update()
       {
          GameOver(player1Name, player1Score, player2Score, 0, true);
 
-         if(Restart(remainingPosition, table))
+         if(!(Restart(remainingPosition, table)))
             break;
       }
 
@@ -220,7 +220,7 @@ void Update()
       {
          GameOver(player2Name, player1Score, player2Score, 2, false);
 
-         if(Restart(remainingPosition, table))
+         if(!(Restart(remainingPosition, table)))
             break;
       }
    }
