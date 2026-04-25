@@ -1,13 +1,8 @@
 #include <iostream>
 using namespace std;
 
-string player1Name, player2Name, rematch;
-string playerChoice, player1Character, player2Character;
-
-int player1Coordinate, player2Coordinate;
-int player1Score = 0, player2Score = 0;
-
-int gameOver = 0;
+string player1Name, player2Name;
+string player1Character, player2Character;
 
 string table[3][3] =
    {
@@ -38,27 +33,66 @@ void ModifyTable(string table[][3], string playerCharacter, int coordinates)
 
 int IsThreeInARow(string table[][3], string playerCharacter)
 {
+   bool isThreeInARow = true;
+   int ok = 0;
+
    for(int i = 0; i < 3; i++)
    {
+      ok = 0;
       for(int j = 0; j < 3; j++)
-         if(table[i][j] == table[i][j+1] && table[i][j+1] == table[i][j+2])
-            if(table[i][j] == playerCharacter)
-               return 1;
-         else
-            if(table[j][i] == table[j][i+1] && table[j][i+1] == table[j][i+2])
-               if(table[i][j] == playerCharacter)
-                  return 1;
-         
-      if(table[i][i] == table[i][i+1] && table[1][i+1] == table[i][i+2])
-         if(table[i][i] == playerCharacter)
-            return 1;
-      
-      if(table[i][2-i] == table[i][3-i] && table[1][3-i] == table[i][4-i])
-         if(table[i][i] == playerCharacter)
-            return 1;
+         if(table[i][j] != playerCharacter)
+         {
+            ok--;
+            break;
+         }
+      if(ok == 0)
+         return isThreeInARow;
    }
 
-   return 0;
+   for(int i = 0; i < 3; i++)
+   {
+      ok = 0;
+      for(int j = 0; j < 3; j++)
+         if(table[j][i] != playerCharacter)
+         {
+         ok--;
+         break;
+         }
+
+      if(ok == 0)
+         return isThreeInARow;
+   }
+        
+   ok = 0;
+
+   for(int j = 0; j < 3; j++)
+   {
+      if(table[j][j] != playerCharacter)
+      {
+            ok--;
+            continue;
+      }
+      
+   }
+   
+   if(ok == 0)
+      return isThreeInARow;
+
+   ok = 0;
+
+   for(int j = 0; j < 3; j++)
+   {
+      if(table[j][2-j] != playerCharacter)
+      {
+            ok--;
+            continue;
+      }   
+   }
+
+   if(ok == 0)
+      return isThreeInARow;
+
+   return false;
 }
 
 void RestoreTable(string table[][3])
@@ -75,15 +109,55 @@ void RestoreTable(string table[][3])
          table[i][j] = originalTable[i][j];
 }
 
+void GameOver( string playerName, int player1Score, int player2Score, int playerIndex, bool isDraw)
+{
+
+   if(playerIndex == 1)
+      player1Score += 1;
+   else
+      if(playerIndex == 2)
+         player2Score += 1;
+
+   if(!isDraw)
+   {
+      cout << "Jatek vege! " << playerName << " nyert \n";
+   }    
+   else
+      cout << "Jatek vege! Dontetlen! \n";
+
+   cout << "Jelenlegi allas: " << player1Score << ':' << player2Score << "\n";
+
+}
+
+bool Restart(int remainingPosition, string table[][3])
+{
+   string rematch;
+   cout << "Visszavago (igen/nem)? \n";
+   cin >> rematch;
+
+   if(rematch == "igen")
+   {
+      remainingPosition = 9;
+      RestoreTable(table);
+      WriteTable(table);
+
+      return true;
+   }
+   else
+      return false;
+}
+
 void Start()
 {
+   string playerChoice;
+
    cout << "1. jatekos: add meg a felhasznalo neved: \n";
    cin >> player1Name;
 
    cout << "2. jatekos: add meg a felhasznalo neved: \n";
    cin >> player2Name;
 
-   cout << "1. jatekos: valaszd ki, hogy x vagy o: \n";
+   cout << player1Name << ": valaszd ki, hogy x vagy o: \n";
    cin >> playerChoice;
 
    if(playerChoice == "x")
@@ -100,12 +174,16 @@ void Start()
 
 void Update()
 {
-   int player1InputCount = 0, player2InputCount = 0, remainingPosition = 9;
+   bool isGameOver = false;
+
+   int remainingPosition = 9;
+   int player1Score = 0, player2Score = 0;
 
    WriteTable(table);
 
-   while(gameOver == 0)
+   while(!isGameOver)
    {
+      int player1Coordinate, player2Coordinate;
 
       cout << player1Name << " add meg a tablazatban lathato szamot \n";
       cin >> player1Coordinate;
@@ -114,29 +192,21 @@ void Update()
 
       ModifyTable(table, player1Character, player1Coordinate);
 
-
-      if(IsThreeInARow(table, player1Character) == 1)
+      if(IsThreeInARow(table, player1Character))
       {
-         cout << "Jatek vege!" << player1Name << " nyert \n";
-         cout << "Jelenlegi allas:" << player1Score << ':' << player2Score << "\n";
+         GameOver(player1Name, player1Score, player2Score, 1, false);
 
-         cout << "Visszavago (igen/nem)? \n";
-         cin >> rematch;
-
-         if(rematch == "igen")
-         {
-            remainingPosition = 9;
-            RestoreTable(table);
-            continue;
-         }
-         else
-         {
-            gameOver == 1;
-            continue;
-         }
-
+         if(Restart(remainingPosition, table))
+            break;
       }
       
+      if(remainingPosition == 0)
+      {
+         GameOver(player1Name, player1Score, player2Score, 0, true);
+
+         if(Restart(remainingPosition, table))
+            break;
+      }
 
       cout << player2Name << " add meg a tablazatban lathato szamot \n";
       cin >> player2Coordinate;
@@ -146,50 +216,14 @@ void Update()
       ModifyTable(table, player2Character, player2Coordinate);
 
          
-      if(IsThreeInARow(table, player2Character) == 1)
+      if(IsThreeInARow(table, player2Character))
       {
-         cout << "Jatek vege!" << player2Name << " nyert \n";
-         cout << "Jelenlegi allas:" << player1Score ++ << ':' << player2Score << "\n";
+         GameOver(player2Name, player1Score, player2Score, 2, false);
 
-         cout << "Visszavago (igen/nem)? \n";
-         cin >> rematch;
-
-         if(rematch == "igen")
-         {
-            remainingPosition = 9;
-            RestoreTable(table);
-            continue;
-         }
-         else
-         {
-            gameOver == 1;
-            continue;
-         }
-
+         if(Restart(remainingPosition, table))
+            break;
       }
-      
-      if(remainingPosition == 0)
-      {
-         cout << "Jatek vege! Dontetlen! \n";
-         cout << "Jelenlegi allas:" << player1Score << ':' << player2Score++ << "\n";
-
-         cout << "Visszavago (igen/nem)? \n";
-         cin >> rematch;
-
-         if(rematch == "igen")
-         {
-            remainingPosition = 9;
-            RestoreTable(table);
-            continue;
-         }
-         else
-         {
-            gameOver == 1;
-         }
-      }
-
    }
-
 }
 
 int main()
