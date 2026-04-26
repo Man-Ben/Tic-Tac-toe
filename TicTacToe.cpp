@@ -25,10 +25,18 @@ void WriteTable(string table[][3])
 
 void ModifyTable(string table[][3], string playerCharacter, int coordinates)
 {
-
-   table[(coordinates/10)-1][(coordinates%10)-1] = playerCharacter;
-
-   WriteTable(table);
+   
+   if(table[(coordinates/10)-1][(coordinates%10)-1] != "o" && table[(coordinates/10)-1][(coordinates%10)-1] != "x")
+   {
+      table[(coordinates/10)-1][(coordinates%10)-1] = playerCharacter;
+      WriteTable(table);
+   }     
+   else
+   {
+      cout << "Mar volt, irj egy masikat! \n";
+      cin >> coordinates;
+      ModifyTable(table, playerCharacter, coordinates);
+   }
 }
 
 int IsThreeInARow(string table[][3], string playerCharacter)
@@ -109,7 +117,7 @@ void RestoreTable(string table[][3])
          table[i][j] = originalTable[i][j];
 }
 
-void GameOver( string playerName, int player1Score, int player2Score, int playerIndex, bool isDraw)
+void GameOver(string playerName, int& player1Score, int& player2Score, int playerIndex, bool isDraw)
 {
 
    if(playerIndex == 1)
@@ -129,7 +137,7 @@ void GameOver( string playerName, int player1Score, int player2Score, int player
 
 }
 
-bool Restart(int remainingPosition, string table[][3])
+bool Restart(int& remainingPosition, string table[][3])
 {
    string rematch;
    cout << "Visszavago (igen/nem)? \n";
@@ -137,10 +145,9 @@ bool Restart(int remainingPosition, string table[][3])
 
    if(rematch == "igen")
    {
-      remainingPosition = 9;
       RestoreTable(table);
       WriteTable(table);
-
+      remainingPosition = 9;
       return true;
    }
    else
@@ -219,6 +226,14 @@ void Update()
       if(IsThreeInARow(table, player2Character))
       {
          GameOver(player2Name, player1Score, player2Score, 2, false);
+
+         if(!(Restart(remainingPosition, table)))
+            break;
+      }
+
+      if(remainingPosition == 0)
+      {
+         GameOver(player1Name, player1Score, player2Score, 0, true);
 
          if(!(Restart(remainingPosition, table)))
             break;
