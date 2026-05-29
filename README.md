@@ -12,3 +12,7 @@ If every field has been occupied the game ends in a draw.
 If the entered number's digits are bigger than 3 or less than 1 or the number is less than 0
 the program asks the player to pick another number.
 If the entered character is not x or o, the program asks the player to pick x or o.
+
+## Used Technologies
+Visual Studio Code
+Git/Github
