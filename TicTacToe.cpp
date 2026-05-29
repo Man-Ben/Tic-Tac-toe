@@ -12,7 +12,7 @@ string table[3][3] =
    };
 
 //This method displays the table on the console.
-void WriteTable(string table[][3])
+void writeTable(string table[][3])
 {
    for(int i = 0; i < 3; i++)
    {
@@ -28,19 +28,25 @@ This method modifies the table on the player's input.
 If the given coordinates are out of range or this field already contains an x or o
 the method calls itself.
 */
-void ModifyTable(string table[][3], string playerCharacter, int coordinates)
+void modifyTable(string table[][3], string playerCharacter, int coordinates)
 {
-   
-   if(table[(coordinates/10)-1][(coordinates%10)-1] != "o" && table[(coordinates/10)-1][(coordinates%10)-1] != "x")
-   {
-      table[(coordinates/10)-1][(coordinates%10)-1] = playerCharacter;
-      WriteTable(table);
-   }     
+   if(coordinates/10 <= 3 && coordinates % 10 <= 3 && coordinates > 0)
+      if(table[(coordinates/10)-1][(coordinates%10)-1] != "o" && table[(coordinates/10)-1][(coordinates%10)-1] != "x")
+      {
+         table[(coordinates/10)-1][(coordinates%10)-1] = playerCharacter;
+         writeTable(table);
+      }     
+      else
+      {
+         cout << "This field is already occupied! Try another! \n";
+         cin >> coordinates;
+         modifyTable(table, playerCharacter, coordinates);
+      }
    else
    {
-      cout << "Mar volt, irj egy masikat! \n";
+      cout << "Out of range! Try again! \n";
       cin >> coordinates;
-      ModifyTable(table, playerCharacter, coordinates);
+         modifyTable(table, playerCharacter, coordinates);
    }
 }
 
@@ -48,7 +54,7 @@ void ModifyTable(string table[][3], string playerCharacter, int coordinates)
 This method checks if in table are three x or o characters in the same a row, column or diagonal. 
 If there are returns a true value.
 */
-int IsThreeInARow(string table[][3], string playerCharacter)
+int isThreeInARow(string table[][3], string playerCharacter)
 {
    bool isThreeInARow = true;
    int ok = 0;
@@ -113,7 +119,7 @@ int IsThreeInARow(string table[][3], string playerCharacter)
 }
 
 //This method is called when the game is over, but the players want a replay. Restores the modified table.
-void RestoreTable(string table[][3])
+void restoreTable(string table[][3])
 {
    string originalTable[3][3] = 
    {
@@ -132,7 +138,7 @@ This method is called when one of the players wins
 or when the game ends in a draw.
 Displays a game over message and the current score.
 */
-void GameOver(string playerName, int& player1Score, int& player2Score, int playerIndex, bool isDraw)
+void gameOver(string playerName, int& player1Score, int& player2Score, int playerIndex, bool isDraw)
 {
 
    if(playerIndex == 1)
@@ -143,12 +149,12 @@ void GameOver(string playerName, int& player1Score, int& player2Score, int playe
 
    if(!isDraw)
    {
-      cout << "Jatek vege! " << playerName << " nyert \n";
+      cout << "Game over! " << playerName << " won! \n";
    }    
    else
-      cout << "Jatek vege! Dontetlen! \n";
+      cout << "Game over! Draw! \n";
 
-   cout << "Jelenlegi allas: " << player1Score << ':' << player2Score << "\n";
+   cout << "Current score: " << player1Score << ':' << player2Score << "\n";
 
 }
 
@@ -158,16 +164,16 @@ calls the restoreTable() method, then displays a cleared table.
 It sets the remainingPosition variable to 9 and returns a true value.
 Otherwise case returns false.
 */
-bool Restart(int& remainingPosition, string table[][3])
+bool rematch(int& remainingPosition, string table[][3])
 {
    string rematch;
-   cout << "Visszavago (igen/nem)? \n";
+   cout << "Want a rematch (yes/no)? \n";
    cin >> rematch;
 
-   if(rematch == "igen")
+   if(rematch == "yes")
    {
-      RestoreTable(table);
-      WriteTable(table);
+      restoreTable(table);
+      writeTable(table);
       remainingPosition = 9;
       return true;
    }
@@ -179,18 +185,24 @@ bool Restart(int& remainingPosition, string table[][3])
 This method is called at the start of the game.
 Asks the players to set a username and a character to play with (x or o).
 */
-void Start()
+void start()
 {
    string playerChoice;
 
-   cout << "1. jatekos: add meg a felhasznalo neved: \n";
+   cout << "Player 1: choose your username: \n";
    cin >> player1Name;
 
-   cout << "2. jatekos: add meg a felhasznalo neved: \n";
+   cout << "Player 2: choose your username: \n";
    cin >> player2Name;
 
-   cout << player1Name << ": valaszd ki, hogy x vagy o: \n";
+   cout << player1Name << ": choose a character (x or o): \n";
    cin >> playerChoice;
+
+   while(playerChoice != "x" && playerChoice != "o")
+   {
+      cout << "You have chosen an invalid character. Please choose between x or o! \n";
+      cin >> playerChoice;
+   }
 
    if(playerChoice == "x")
    {
@@ -213,63 +225,63 @@ returns true the rematch() method is called. If it returns true the game
 continues, otherwise ends.
 If the remainingPosition reaches 0 the game ends in a draw. The rematch() is called again.
 */
-void Update()
+void update()
 {
    bool isGameOver = false;
 
    int remainingPosition = 9;
    int player1Score = 0, player2Score = 0;
 
-   WriteTable(table);
+   writeTable(table);
 
    while(!isGameOver)
    {
       int player1Coordinate, player2Coordinate;
 
-      cout << player1Name << " add meg a tablazatban lathato szamot \n";
+      cout << player1Name << " choose a number shown on the screen \n";
       cin >> player1Coordinate;
       
       remainingPosition--;
 
-      ModifyTable(table, player1Character, player1Coordinate);
+      modifyTable(table, player1Character, player1Coordinate);
 
-      if(IsThreeInARow(table, player1Character))
+      if(isThreeInARow(table, player1Character))
       {
-         GameOver(player1Name, player1Score, player2Score, 1, false);
+         gameOver(player1Name, player1Score, player2Score, 1, false);
 
-         if(!(Restart(remainingPosition, table)))
+         if(!(rematch(remainingPosition, table)))
             break;
       }
       
       if(remainingPosition == 0)
       {
-         GameOver(player1Name, player1Score, player2Score, 0, true);
+         gameOver(player1Name, player1Score, player2Score, 0, true);
 
-         if(!(Restart(remainingPosition, table)))
+         if(!(rematch(remainingPosition, table)))
             break;
       }
 
-      cout << player2Name << " add meg a tablazatban lathato szamot \n";
+      cout << player2Name << " choose a number shown on the screen \n";
       cin >> player2Coordinate;
 
       remainingPosition--;
 
-      ModifyTable(table, player2Character, player2Coordinate);
+      modifyTable(table, player2Character, player2Coordinate);
 
          
-      if(IsThreeInARow(table, player2Character))
+      if(isThreeInARow(table, player2Character))
       {
-         GameOver(player2Name, player1Score, player2Score, 2, false);
+         gameOver(player2Name, player1Score, player2Score, 2, false);
 
-         if(!(Restart(remainingPosition, table)))
+         if(!(rematch(remainingPosition, table)))
             break;
       }
 
       if(remainingPosition == 0)
       {
-         GameOver(player1Name, player1Score, player2Score, 0, true);
+         gameOver(player1Name, player1Score, player2Score, 0, true);
 
-         if(!(Restart(remainingPosition, table)))
+         if(!(rematch(remainingPosition, table)))
             break;
       }
    }
@@ -278,8 +290,8 @@ void Update()
 int main()
 {  
 
-   Start();
-   Update();
+   start();
+   update();
 
    return 0;
 }
