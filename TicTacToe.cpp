@@ -30,7 +30,7 @@ the method calls itself.
 */
 void modifyTable(string table[][3], string playerCharacter, int coordinates)
 {
-   if(coordinates/10 <= 3 && coordinates % 10 <= 3 && coordinates > 0)
+   if(coordinates/10 <= 3 && coordinates % 10 <= 3 && coordinates/10 > 0 && coordinates % 10 > 0 && coordinates > 0)
       if(table[(coordinates/10)-1][(coordinates%10)-1] != "o" && table[(coordinates/10)-1][(coordinates%10)-1] != "x")
       {
          table[(coordinates/10)-1][(coordinates%10)-1] = playerCharacter;
