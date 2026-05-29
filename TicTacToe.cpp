@@ -11,7 +11,7 @@ string table[3][3] =
    "31", "32", "33"
    };
 
-
+//This method displays the table on the console.
 void WriteTable(string table[][3])
 {
    for(int i = 0; i < 3; i++)
@@ -23,6 +23,11 @@ void WriteTable(string table[][3])
    }
 }
 
+/*
+This method modifies the table on the player's input. 
+If the given coordinates are out of range or this field already contains an x or o
+the method calls itself.
+*/
 void ModifyTable(string table[][3], string playerCharacter, int coordinates)
 {
    
@@ -39,6 +44,10 @@ void ModifyTable(string table[][3], string playerCharacter, int coordinates)
    }
 }
 
+/*
+This method checks if in table are three x or o characters in the same a row, column or diagonal. 
+If there are returns a true value.
+*/
 int IsThreeInARow(string table[][3], string playerCharacter)
 {
    bool isThreeInARow = true;
@@ -103,6 +112,7 @@ int IsThreeInARow(string table[][3], string playerCharacter)
    return false;
 }
 
+//This method is called when the game is over, but the players want a replay. Restores the modified table.
 void RestoreTable(string table[][3])
 {
    string originalTable[3][3] = 
@@ -117,6 +127,11 @@ void RestoreTable(string table[][3])
          table[i][j] = originalTable[i][j];
 }
 
+/*
+This method is called when one of the players wins 
+or when the game ends in a draw.
+Displays a game over message and the current score.
+*/
 void GameOver(string playerName, int& player1Score, int& player2Score, int playerIndex, bool isDraw)
 {
 
@@ -137,6 +152,12 @@ void GameOver(string playerName, int& player1Score, int& player2Score, int playe
 
 }
 
+/*
+When the game is over displays a "Rematch?" message. If the answer is "yes"
+calls the restoreTable() method, then displays a cleared table. 
+It sets the remainingPosition variable to 9 and returns a true value.
+Otherwise case returns false.
+*/
 bool Restart(int& remainingPosition, string table[][3])
 {
    string rematch;
@@ -154,6 +175,10 @@ bool Restart(int& remainingPosition, string table[][3])
       return false;
 }
 
+/*
+This method is called at the start of the game.
+Asks the players to set a username and a character to play with (x or o).
+*/
 void Start()
 {
    string playerChoice;
@@ -179,6 +204,15 @@ void Start()
    }
 }
 
+/*
+This method manages the entire gameflow.
+Until the game is over asks the players to make a move. 
+At every input reduces the remainingPosition's value,
+calls the modifyTable and isThreeInARow() methods. If isThreeInARow() 
+returns true the rematch() method is called. If it returns true the game
+continues, otherwise ends.
+If the remainingPosition reaches 0 the game ends in a draw. The rematch() is called again.
+*/
 void Update()
 {
    bool isGameOver = false;
