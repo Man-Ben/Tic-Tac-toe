@@ -14,5 +14,5 @@ the program asks the player to pick another number.
 If the entered character is not x or o, the program asks the player to pick x or o.
 
 ## Used Technologies
-Visual Studio Code
-Git/Github
+- Visual Studio Code
+- Git/Github
