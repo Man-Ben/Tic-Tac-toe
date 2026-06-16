@@ -57,62 +57,62 @@ If there are returns a true value.
 int isThreeInARow(string table[][3], string playerCharacter)
 {
    bool isThreeInARow = true;
-   int ok = 0;
+   bool ok = true;
 
    for(int i = 0; i < 3; i++)
    {
-      ok = 0;
+      ok = true;
       for(int j = 0; j < 3; j++)
          if(table[i][j] != playerCharacter)
          {
-            ok--;
+            ok = false;
             break;
          }
-      if(ok == 0)
+      if(ok)
          return isThreeInARow;
    }
 
    for(int i = 0; i < 3; i++)
    {
-      ok = 0;
+      ok = true;
       for(int j = 0; j < 3; j++)
          if(table[j][i] != playerCharacter)
          {
-         ok--;
+         ok = false;
          break;
          }
 
-      if(ok == 0)
+      if(ok)
          return isThreeInARow;
    }
         
-   ok = 0;
+   ok = true;
 
    for(int j = 0; j < 3; j++)
    {
       if(table[j][j] != playerCharacter)
       {
-            ok--;
+            ok = false;
             continue;
       }
       
    }
    
-   if(ok == 0)
+   if(ok)
       return isThreeInARow;
 
-   ok = 0;
+   ok = true;
 
    for(int j = 0; j < 3; j++)
    {
       if(table[j][2-j] != playerCharacter)
       {
-            ok--;
+            ok = false;
             continue;
       }   
    }
 
-   if(ok == 0)
+   if(ok)
       return isThreeInARow;
 
    return false;
